@@ -42,21 +42,26 @@ __extend__(HTMLOptionElement.prototype, {
             return;
         }
         this.setAttribute('selected', selectedValue);
+        var parentSelect = this.parentNode;
+        while (parentSelect.tagName != 'SELECT')
+        {
+            parentSelect = parentSelect.parentNode;
+        }
         if (value) {
             // set select's value to this option's value (this also 
             // unselects previously selected value)
-            this.parentNode.value = this.value;
+            parentSelect.value = this.value;
         } else {
             // if no other option is selected, select the first option in the select
             var i, anythingSelected;
-            for (i=0; i<this.parentNode.options.length; i++) {
-                if (this.parentNode.options[i].selected) {
+            for (i=0; i<parentSelect.options.length; i++) {
+                if (parentSelect.options[i].selected) {
                     anythingSelected = true;
                     break;
                 }
             }
             if (!anythingSelected) {
-                this.parentNode.value = this.parentNode.options[0].value;
+                parentSelect.value = parentSelect.options[0].value;
             }
         }
 
@@ -65,6 +70,10 @@ __extend__(HTMLOptionElement.prototype, {
          return ((this.nodeValue === null) ||  (this.nodeValue ===undefined)) ?
              this.innerHTML :
              this.nodeValue;
+    },
+    set text(){
+        this.innerHTML = value;
+        this.nodeValue = value;
     },
     get value(){
         return ((this.getAttribute('value') === undefined) || (this.getAttribute('value') === null)) ?
